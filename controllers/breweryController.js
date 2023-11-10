@@ -58,7 +58,7 @@ const postReview = async (req, res,next) => {
     if (!brewery) {
       const review = new Review({
         reviewerId: userId,
-        reviewerName: user?.name,
+        reviewerName: user.name,
         rating,
         description,
       });
@@ -81,12 +81,12 @@ const postReview = async (req, res,next) => {
       } else {
         const review = new Review({
           reviewerId: userId,
-          reviewerName: user?.name,
+          reviewerName: user.name,
           rating,
           description,
         });
         const savedReview = await review.save();
-        brewery.reviews.push(savedReview?.id);
+        brewery.reviews.push(savedReview.id);
         await brewery.save();
         const newBrewery = await Brewery.findOne({ breweryId: breweryId }).populate('reviews');
         res.status(StatusCodes.OK).json({ brewery:newBrewery });
