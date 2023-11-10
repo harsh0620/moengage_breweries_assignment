@@ -8,6 +8,9 @@ import authRouter from "./routes/authRoute.js";
 import notFoundMiddleware from "./middleware/not-found.js";
 import errorHandlerMiddleware from "./middleware/error-handler.js";
 import authenticateUser from "./middleware/auth.js";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import path from "path";
 // Load environment variables from .env file
 dotenv.config();
 
@@ -21,6 +24,11 @@ if (process.env.NODE_ENV === "development") {
 // Use cors middleware to allow cross-origin requests
 app.use(cors());
 
+// Get the directory name
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// Serve static files
+app.use(express.static(path.resolve(__dirname, "./client/build")));
 // Parse incoming JSON data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -31,6 +39,10 @@ app.use("/api/v1/auth", authRouter);
 // Mount breweries routes at /api/v1/breweries
 // Authenticate breweries before accessing breweries routes
 app.use("/api/v1/breweries", authenticateUser, breweryRouter);
+
+app.get("*", function (request, response) {
+  response.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
+});
 
 // Mount middleware for handling 404 not found errors
 app.use(notFoundMiddleware);
